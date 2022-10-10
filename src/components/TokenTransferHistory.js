@@ -1,7 +1,34 @@
 import axios from "axios";
+import { useEffect } from "react";
+import {
+	Table,
+	Thead,
+	Tbody,
+	Tfoot,
+	Tr,
+	Th,
+	Td,
+	TableCaption,
+	TableContainer,
+	Tooltip,
+} from "@chakra-ui/react";
 
-function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
+function TokenTransferHistory({
+	chain,
+	wallet,
+	transfers,
+	setTransfers,
+
+}) {
+
+	useEffect(() => {
+		if (wallet !== "" && chain !== "") {
+			getTokenTransferData();
+		}
+	}, [wallet, chain]);
+
 	async function getTokenTransferData() {
+
 		const response = await axios.get(
 			"http://localhost:8080/token-transfers",
 			{
@@ -15,32 +42,30 @@ function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
 		if (response.data) {
 			setTransfers(response.data);
 		}
-	}
 
-	
+	}
 
 	return (
 		<div>
 			<h1>Token transfer history</h1>
-			<div>
-				<button onClick={getTokenTransferData}>Fetch Transfers</button>
-
-				<table>
-					<tbody>
-						<tr>
-							<th>Token Name</th>
-							{/* <th>Token Symbol</th> */}
-							<th>Token Amount</th>
-							<th>Token From </th>
-							<th>Token To</th>
-							<th>Token Date</th>
-						</tr>
+			{/* <button onClick={getTokenTransferData}>Fetch Transfers</button> */}
+			<TableContainer>
+				<Table variant="simple">
+					<Thead>
+						<Tr>
+							<Th>Token Name</Th>
+							<Th>Token Amount</Th>
+							<Th>Token To </Th>
+							<Th>Token From</Th>
+							<Th>Token Date</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
 						{transfers.map((tokenTransfer) => {
 							return (
-								<tr key={tokenTransfer.block_timestamp}>
-									<td>{tokenTransfer.name}</td>
-									{/* <td>{ tokenTransfer.symbol }</td> */}
-									<td>
+								<Tr key={tokenTransfer.transaction_hash}>
+									<Td>{tokenTransfer.name}</Td>
+									<Td>
 										{(
 											Number(tokenTransfer.value) /
 											Number(
@@ -48,16 +73,54 @@ function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
 											)
 										).toFixed(2)}{" "}
 										{tokenTransfer.symbol}
-									</td>
-									<td>{tokenTransfer.from_address}</td>
-									<td>{tokenTransfer.to_address}</td>
-									<td>{tokenTransfer.block_timestamp}</td>
-								</tr>
+									</Td>
+									<Tooltip
+										hasArrow
+										label={tokenTransfer.to_address}
+									>
+										<Td>
+											{tokenTransfer.to_address.slice(
+												0,
+												6
+											)}
+											...........
+											{tokenTransfer.from_address.slice(
+												37,
+												tokenTransfer.to_address
+													.length - 1
+											)}
+										</Td>
+									</Tooltip>
+
+									<Tooltip
+										hasArrow
+										label={tokenTransfer.from_address}
+									>
+										<Td>
+											{tokenTransfer.from_address.slice(
+												0,
+												6
+											)}
+											...........
+											{tokenTransfer.to_address.slice(
+												37,
+												tokenTransfer.to_address
+													.length - 1
+											)}
+										</Td>
+									</Tooltip>
+									<Td>
+										{tokenTransfer.block_timestamp.slice(
+											0,
+											10
+										)}
+									</Td>
+								</Tr>
 							);
 						})}
-					</tbody>
-				</table>
-			</div>
+					</Tbody>
+				</Table>
+			</TableContainer>
 		</div>
 	);
 }

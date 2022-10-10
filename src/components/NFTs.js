@@ -1,108 +1,156 @@
 import axios from "axios";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
+import { Box, Image, Spinner } from "@chakra-ui/react";
 
 function NFTs({ wallet, chain, nfts, setNfts }) {
+	const [nameFilter, setNameFilter] = useState("");
+	const [idFilter, setIdFilter] = useState("");
+	const [filteredNFTs, setFilteredNFTs] = useState([]);
+	const [isFetching, setIsFetching] = useState(false);
 
-    const [nameFilter, setNameFilter] = useState("");
-    const [idFilter, setIdFilter] = useState("");
-    const [filteredNFTs, setFilteredNFTs] = useState([]);
+	useEffect(() => {
+		if (nameFilter !== "" || idFilter !== "") {
+			let filtered = [];
+			try {
+				if (nameFilter !== "") {
+					for (let i = 0; i < nfts.length; i++) {
+						if (nfts[i].name.includes(nameFilter)) {
+							// console.log(nfts[i].name.toLowerCase());
+							// console.log(nameFilter.toLowerCase());
+							filtered.push(nfts[i]);
+						}
+					}
+				}
+				if (idFilter !== "") {
+					for (let i = 0; i < nfts.length; i++) {
+						console.log(nfts[i].token_id);
+						console.log(idFilter);
+						if (nfts[i].token_id.includes(idFilter)) {
+							filtered.push(nfts[i]);
+						}
+					}
+				}
+			} catch (error) {
+				console.log(error);
+			}
+			// console.log(filtered);
+			setFilteredNFTs(filtered);
+		} else {
+			setFilteredNFTs(nfts);
+		}
+	}, [nameFilter, idFilter]);
 
-    useEffect(() => {
-        if (nameFilter!=="" || idFilter!=="") {
-            
-            let filtered = []
-            if (nameFilter !== "") {
-                for (let i = 0; i < nfts.length; i++) {
-                    if (nfts[i].name.toLowerCase().includes(nameFilter.toLowerCase()) ) {
-                        // console.log(nfts[i].name.toLowerCase());
-                        // console.log(nameFilter.toLowerCase());
-                        filtered.push(nfts[i])
-                    }
-                }
-            }
-            if (idFilter !=="") {
-                for (let i = 0; i < nfts.length; i++) {
-                    console.log(nfts[i].token_id);
-                    console.log(idFilter);
-                    if (nfts[i].token_id.includes(idFilter) ) {
-                        filtered.push(nfts[i])
-                    }
-                }
-            }
-            // console.log(filtered);
-            setFilteredNFTs(filtered);
-        } else {
-            setFilteredNFTs(nfts);
-        }
-    },[nameFilter, idFilter])
+	useEffect(() => {
+		if (wallet !== "" && chain !== "") {
+			console.log(
+				`in one ${wallet.length !== ""},${
+					chain !== ""
+				}   {wallet},${chain}`
+			);
+			console.log("! got trigged");
+			getUserNFTs();
+		}
+	}, []);
 
+	useEffect(() => {
+		if (wallet !== "" && chain !== "") {
+			console.log(
+				`in two ${wallet.length !== ""},${
+					chain !== ""
+				},   ${wallet},${chain}`
+			);
+			console.log("2 got tragged");
+			getUserNFTs();
+		}
+	}, [chain, wallet]);
 
-    async function getUserNFTs() {
+	async function getUserNFTs() {
+		setIsFetching(true);
+		console.log("Fetch trigged");
+		const response = await axios.get("http://localhost:8080/nft-balance", {
+			params: {
+				address: wallet,
+				chain: chain,
+			},
+		});
 
-        console.log("Fetch trigged");
-        const response = await axios.get("http://localhost:8080/nft-balance", {
-            params: {
-                address: wallet,
-                chain:chain
-            }
-        })
+		if (response.data.length > 0) {
+			await nftProcessing(response.data);
+		} else {
+			setIsFetching(false);
+		}
+	}
 
+	async function nftProcessing(t) {
+		for (let i = 0; i < t.length; i++) {
+			let metadata = JSON.parse(t[i].metadata);
 
+			if (metadata && metadata.image) {
+				if (metadata.image.includes(".")) {
+					t[i].image = metadata.image;
+				} else {
+					t[i].image = "https://ipfs.io/ipfs/" + metadata.image;
+				}
+			}
+		}
 
-        if (response.data) {
-            await nftProcessing(response.data)
-        }
+		setNfts(t);
+		setFilteredNFTs(t);
 
-    }
+		console.log("NFTS set successfully");
+		setIsFetching(false);
+	}
 
-    async function nftProcessing(t) {
-        for (let i = 0; i < t.length; i++){
-            let metadata = JSON.parse(t[i].metadata);
-
-
-
-            if (metadata && metadata.image) {
-
-                if (metadata.image.includes(".")) {
-                    t[i].image = metadata.image;
-                } else {
-                    t[i].image = "https://ipfs.io/ipfs/" + metadata.image;
-                }
-
-            }
-        }
-
-        setNfts(t);
-        setFilteredNFTs(t)
-
-        console.log("NFTS set successfully");
-    }
-
-   
-
-    return (
-        <div>
-            <h1>Portfolio NFTs</h1>
-            <div>
-
-                <button onClick={getUserNFTs}>Fetch NFTs</button>
-                <br />
-                <input type="text" placeholder="Filter by name" onChange={(e) => setNameFilter(e.target.value)} value={nameFilter} />
-                <input type="text" placeholder="Filter by ID" onChange={(e) => setIdFilter(e.target.value)} value={idFilter} />
-                <br />
-                {filteredNFTs.map((nft) => {
-                    return (
-                        <div key={nft.token_id}>
-                            {nft.image && <img src={nft.image} width={200} />}
-                            <span>Name: { nft.name }, </span>
-                            <span>(ID: { nft.token_id })</span>
-                        </div>
-                    )
-                })}
-
-            </div>
-        </div>
-    );
+	return (
+		<div>
+			<h1>Portfolio NFTs</h1>
+			<div>
+				<input
+					type="text"
+					placeholder="Filter by name"
+					onChange={(e) => setNameFilter(e.target.value)}
+					value={nameFilter}
+				/>
+				<input
+					type="text"
+					placeholder="Filter by ID"
+					onChange={(e) => setIdFilter(e.target.value)}
+					value={idFilter}
+				/>
+				<br />
+				{isFetching ? (
+					<Spinner
+						thickness="4px"
+						speed="0.65s"
+						emptyColor="gray.200"
+						color="blue.500"
+						size="xl"
+					/>
+				) : (
+					filteredNFTs.map((nft) => {
+						return (
+							<Box
+								key={nft.token_hash}
+								maxW="300px"
+								borderWidth="1px"
+								borderRadius="lg"
+								overflow="hidden"
+								m="6"
+							>
+								{nft.image && (
+									<Image src={nft.image} alt={nft.name} />
+								)}
+								<Box mt="1" fontWeight="semibold" p="6">
+									<span>Name: {nft.name}, </span>
+									<span>(ID: {nft.token_id})</span>
+								</Box>
+							</Box>
+						);
+					})
+				)}
+			</div>
+		</div>
+	);
 }
 
 export default NFTs;
