@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {Spinner} from "@chakra-ui/react"
 
 function NativeTokens({
 	wallet,
@@ -7,8 +8,9 @@ function NativeTokens({
 	nativeBalance,
 	setNativeBalance,
 	nativeValue,
-	setNativeValue,
+	setNativeValue
 }) {
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		if (wallet !== "" && chain !== "") {
@@ -17,6 +19,7 @@ function NativeTokens({
 	}, [wallet, chain]);
 
 	async function getNativeBalance() {
+		setIsLoading(true);
 		const response = await axios.get(
 			"http://localhost:8080/native-balance",
 			{
@@ -38,12 +41,24 @@ function NativeTokens({
 		}
 
 		// console.log(response);
-		
+		setIsLoading(false);
 	}
 
 	return (
 		<div>
-			Native Balance: {nativeBalance}, (${nativeValue})
+			{isLoading ? (
+				<Spinner
+					thickness="4px"
+					speed="0.65s"
+					emptyColor="gray.200"
+					color="blue.500"
+					size="xl"
+				/>
+			) : (
+				<div>
+					Native Balance: {nativeBalance}, (${nativeValue})
+				</div>
+			)}
 		</div>
 	);
 }

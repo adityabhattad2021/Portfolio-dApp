@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
 	Table,
 	Thead,
@@ -11,15 +11,11 @@ import {
 	TableCaption,
 	TableContainer,
 	Tooltip,
+	Spinner
 } from "@chakra-ui/react";
 
-function TokenTransferHistory({
-	chain,
-	wallet,
-	transfers,
-	setTransfers,
-
-}) {
+function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		if (wallet !== "" && chain !== "") {
@@ -28,6 +24,7 @@ function TokenTransferHistory({
 	}, [wallet, chain]);
 
 	async function getTokenTransferData() {
+		setIsLoading(true);
 
 		const response = await axios.get(
 			"http://localhost:8080/token-transfers",
@@ -43,84 +40,95 @@ function TokenTransferHistory({
 			setTransfers(response.data);
 		}
 
+		setIsLoading(false);
 	}
 
 	return (
 		<div>
 			<h1>Token transfer history</h1>
 			{/* <button onClick={getTokenTransferData}>Fetch Transfers</button> */}
-			<TableContainer>
-				<Table variant="simple">
-					<Thead>
-						<Tr>
-							<Th>Token Name</Th>
-							<Th>Token Amount</Th>
-							<Th>Token To </Th>
-							<Th>Token From</Th>
-							<Th>Token Date</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{transfers.map((tokenTransfer) => {
-							return (
-								<Tr key={tokenTransfer.transaction_hash}>
-									<Td>{tokenTransfer.name}</Td>
-									<Td>
-										{(
-											Number(tokenTransfer.value) /
-											Number(
-												`1e${tokenTransfer.decimals}`
-											)
-										).toFixed(2)}{" "}
-										{tokenTransfer.symbol}
-									</Td>
-									<Tooltip
-										hasArrow
-										label={tokenTransfer.to_address}
-									>
+			{isLoading ? (
+				<Spinner
+					thickness="4px"
+					speed="0.65s"
+					emptyColor="gray.200"
+					color="blue.500"
+					size="xl"
+				/>
+			) : (
+				<TableContainer>
+					<Table variant="simple">
+						<Thead>
+							<Tr>
+								<Th>Token Name</Th>
+								<Th>Token Amount</Th>
+								<Th>Token To </Th>
+								<Th>Token From</Th>
+								<Th>Token Date</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{transfers.map((tokenTransfer) => {
+								return (
+									<Tr key={tokenTransfer.transaction_hash}>
+										<Td>{tokenTransfer.name}</Td>
 										<Td>
-											{tokenTransfer.to_address.slice(
-												0,
-												6
-											)}
-											...........
-											{tokenTransfer.from_address.slice(
-												37,
-												tokenTransfer.to_address
-													.length - 1
-											)}
+											{(
+												Number(tokenTransfer.value) /
+												Number(
+													`1e${tokenTransfer.decimals}`
+												)
+											).toFixed(2)}{" "}
+											{tokenTransfer.symbol}
 										</Td>
-									</Tooltip>
+										<Tooltip
+											hasArrow
+											label={tokenTransfer.to_address}
+										>
+											<Td>
+												{tokenTransfer.to_address.slice(
+													0,
+													6
+												)}
+												...........
+												{tokenTransfer.from_address.slice(
+													37,
+													tokenTransfer.to_address
+														.length - 1
+												)}
+											</Td>
+										</Tooltip>
 
-									<Tooltip
-										hasArrow
-										label={tokenTransfer.from_address}
-									>
+										<Tooltip
+											hasArrow
+											label={tokenTransfer.from_address}
+										>
+											<Td>
+												{tokenTransfer.from_address.slice(
+													0,
+													6
+												)}
+												...........
+												{tokenTransfer.to_address.slice(
+													37,
+													tokenTransfer.to_address
+														.length - 1
+												)}
+											</Td>
+										</Tooltip>
 										<Td>
-											{tokenTransfer.from_address.slice(
+											{tokenTransfer.block_timestamp.slice(
 												0,
-												6
-											)}
-											...........
-											{tokenTransfer.to_address.slice(
-												37,
-												tokenTransfer.to_address
-													.length - 1
+												10
 											)}
 										</Td>
-									</Tooltip>
-									<Td>
-										{tokenTransfer.block_timestamp.slice(
-											0,
-											10
-										)}
-									</Td>
-								</Tr>
-							);
-						})}
-					</Tbody>
-				</Table>
-			</TableContainer>
+									</Tr>
+								);
+							})}
+						</Tbody>
+					</Table>
+				</TableContainer>
+			)}
 		</div>
 	);
 }

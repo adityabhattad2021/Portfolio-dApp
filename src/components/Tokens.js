@@ -1,7 +1,10 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {Spinner} from "@chakra-ui/react"
 
 function Tokens({ wallet, chain, tokens, setTokens }) {
+	const [isLoading, setIsLoading] = useState(false);
+
 	useEffect(() => {
 		if (wallet !== "" && chain !== "") {
 			getTokenBalancesAndPrice();
@@ -36,19 +39,31 @@ function Tokens({ wallet, chain, tokens, setTokens }) {
 
 	return (
 		<div>
-			{/* <button onClick={getTokenBalancesAndPrice}> Get tokens</button> */}
-			<br />
-			{tokens.length > 0 &&
-				tokens.map((ele) => {
-					return (
-						<div key={ele.token_address}>
-							<span>
-								{ele.symbol} {ele.bal} (${ele.val})
-							</span>
-							<br />
-						</div>
-					);
-				})}
+			{isLoading ? (
+				<Spinner
+					thickness="4px"
+					speed="0.65s"
+					emptyColor="gray.200"
+					color="blue.500"
+					size="xl"
+				/>
+			) : (
+				<div>
+					{/* <button onClick={getTokenBalancesAndPrice}> Get tokens</button> */}
+					<br />
+					{tokens.length > 0 &&
+						tokens.map((ele) => {
+							return (
+								<div key={ele.token_address}>
+									<span>
+										{ele.symbol} {ele.bal} (${ele.val})
+									</span>
+									<br />
+								</div>
+							);
+						})}
+				</div>
+			)}
 		</div>
 	);
 }
