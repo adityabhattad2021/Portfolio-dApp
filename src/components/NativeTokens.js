@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {Spinner} from "@chakra-ui/react"
+import { Spinner } from "@chakra-ui/react";
 
 function NativeTokens({
 	wallet,
@@ -8,7 +8,7 @@ function NativeTokens({
 	nativeBalance,
 	setNativeBalance,
 	nativeValue,
-	setNativeValue
+	setNativeValue,
 }) {
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +45,7 @@ function NativeTokens({
 	}
 
 	return (
-		<div>
+		<div className="p-5">
 			{isLoading ? (
 				<Spinner
 					thickness="4px"
@@ -55,8 +55,15 @@ function NativeTokens({
 					size="xl"
 				/>
 			) : (
-				<div>
-					Native Balance: {nativeBalance}, (${nativeValue})
+				<div className="text-xl font-bold flex flex-row justify-between">
+					<div>Native Balance: </div>
+					<div>
+						{nativeBalance}{" "}
+						{chain === "0x89" || chain === "0x13881"
+							? "MATIC"
+							: "ETH"}
+						, (${nativeValue})
+					</div>
 				</div>
 			)}
 		</div>

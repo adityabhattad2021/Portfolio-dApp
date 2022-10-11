@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Box, Image, Spinner } from "@chakra-ui/react";
+import { Box, Image, Spinner, Input } from "@chakra-ui/react";
 
 function NFTs({ wallet, chain, nfts, setNfts }) {
 	const [nameFilter, setNameFilter] = useState("");
@@ -103,21 +103,25 @@ function NFTs({ wallet, chain, nfts, setNfts }) {
 
 	return (
 		<div>
-			<h1>Portfolio NFTs</h1>
+			<h1 className="text-xl p-5 font-bold text-left">Portfolio NFTs</h1>
 			<div>
-				<input
-					type="text"
-					placeholder="Filter by name"
-					onChange={(e) => setNameFilter(e.target.value)}
-					value={nameFilter}
-				/>
-				<input
-					type="text"
-					placeholder="Filter by ID"
-					onChange={(e) => setIdFilter(e.target.value)}
-					value={idFilter}
-				/>
-				<br />
+				<div className="flex flex-row justify-between p-5">
+					<Input
+						style={{width:"32rem"}}
+						type="text"
+						placeholder="Filter by name"
+						onChange={(e) => setNameFilter(e.target.value)}
+						value={nameFilter}
+					/>
+					<Input
+						style={{width:"32rem"}}
+						type="text"
+						placeholder="Filter by ID"
+						onChange={(e) => setIdFilter(e.target.value)}
+						value={idFilter}
+					/>
+				</div>
+
 				{isFetching ? (
 					<Spinner
 						thickness="4px"
@@ -127,26 +131,28 @@ function NFTs({ wallet, chain, nfts, setNfts }) {
 						size="xl"
 					/>
 				) : (
-					filteredNFTs.map((nft) => {
-						return (
-							<Box
-								key={nft.token_hash}
-								maxW="300px"
-								borderWidth="1px"
-								borderRadius="lg"
-								overflow="hidden"
-								m="6"
-							>
-								{nft.image && (
-									<Image src={nft.image} alt={nft.name} />
-								)}
-								<Box mt="1" fontWeight="semibold" p="6">
-									<span>Name: {nft.name}, </span>
-									<span>(ID: {nft.token_id})</span>
+					<div className="grid grid-cols-3 gap-4">
+						{filteredNFTs.map((nft) => {
+							return (
+								<Box
+									key={nft.token_hash}
+									maxW="300px"
+									borderWidth="1px"
+									borderRadius="lg"
+									overflow="hidden"
+									m="6"
+								>
+									{nft.image && (
+										<Image src={nft.image} alt={nft.name} />
+									)}
+									<Box mt="1" fontWeight="semibold" p="6">
+										<span>Name: {nft.name}, </span>
+										<span>(ID: {nft.token_id})</span>
+									</Box>
 								</Box>
-							</Box>
-						);
-					})
+							);
+						})}
+					</div>
 				)}
 			</div>
 		</div>

@@ -11,7 +11,7 @@ import {
 	TableCaption,
 	TableContainer,
 	Tooltip,
-	Spinner
+	Spinner,
 } from "@chakra-ui/react";
 
 function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
@@ -44,8 +44,10 @@ function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
 	}
 
 	return (
-		<div>
-			<h1>Token transfer history</h1>
+		<div >
+			<div className="text-xl p-5 font-bold text-left">
+				Token Transfer History
+			</div>
 			{/* <button onClick={getTokenTransferData}>Fetch Transfers</button> */}
 			{isLoading ? (
 				<Spinner

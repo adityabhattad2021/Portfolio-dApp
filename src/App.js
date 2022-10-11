@@ -1,4 +1,3 @@
-import "./App.css";
 import { useState } from "react";
 import WalletInputs from "./components/WalletInputs";
 import NativeTokens from "./components/NativeTokens";
@@ -23,11 +22,9 @@ function App() {
 	const [tokens, setTokens] = useState([]);
 	const [tokenTransfers, setTokenTransfers] = useState([]);
 	const [nfts, setNFTs] = useState([]);
-  const [filteredNFTs, setFilteredNFTs] = useState([]);
-  
+	const [filteredNFTs, setFilteredNFTs] = useState([]);
 
-  console.log(chain);
-
+	console.log(chain);
 
 	return (
 		<div className="App">
@@ -37,56 +34,62 @@ function App() {
 				wallet={wallet}
 				setWallet={setWallet}
 			/>
-			<Tabs variant="soft-rounded" colorScheme="green">
-				<TabList>
-					<Tab>Tokens</Tab>
-					<Tab>NFTs</Tab>
-				</TabList>
-				<TabPanels>
-					<TabPanel>
-						<NativeTokens
-							wallet={wallet}
-							chain={chain}
-							nativeBalance={nativeBalance}
-							setNativeBalance={setNativeBalance}
-							nativeValue={nativeValue}
-							setNativeValue={setNativeValue}
-		
-						/>
+			<div className="pt-10 flex justify-center w-full border-t-2 ">
+				<div className="border-4 rounded-3xl p-5">
+					<Tabs
+						size="md"
+						align="center"
+						variant="soft-rounded"
+						colorScheme="green"
+					>
+						<TabList>
+							<Tab>Tokens</Tab>
+							<Tab>NFTs</Tab>
+						</TabList>
+						<TabPanels>
+							<TabPanel>
+								<NativeTokens
+									wallet={wallet}
+									chain={chain}
+									nativeBalance={nativeBalance}
+									setNativeBalance={setNativeBalance}
+									nativeValue={nativeValue}
+									setNativeValue={setNativeValue}
+								/>
 
-						<Tokens
-							wallet={wallet}
-							chain={chain}
-							tokens={tokens}
-							setTokens={setTokens}
-		
-						/>
+								<Tokens
+									wallet={wallet}
+									chain={chain}
+									tokens={tokens}
+									setTokens={setTokens}
+								/>
 
-						<PortfolioValue
-							nativeValue={nativeValue}
-							tokens={tokens}
-						/>
+								<PortfolioValue
+									nativeValue={nativeValue}
+									tokens={tokens}
+								/>
 
-						<TokenTransferHistory
-							chain={chain}
-							wallet={wallet}
-							transfers={tokenTransfers}
-							setTransfers={setTokenTransfers}
-
-						/>
-					</TabPanel>
-					<TabPanel>
-						<NFTs
-							wallet={wallet}
-							chain={chain}
-							nfts={nfts}
-							setNfts={setNFTs}
-							filteredNFTs={filteredNFTs}
-							setFilteredNFTs={setFilteredNFTs}
-						/>
-					</TabPanel>
-				</TabPanels>
-			</Tabs>
+								<TokenTransferHistory
+									chain={chain}
+									wallet={wallet}
+									transfers={tokenTransfers}
+									setTransfers={setTokenTransfers}
+								/>
+							</TabPanel>
+							<TabPanel>
+								<NFTs
+									wallet={wallet}
+									chain={chain}
+									nfts={nfts}
+									setNfts={setNFTs}
+									filteredNFTs={filteredNFTs}
+									setFilteredNFTs={setFilteredNFTs}
+								/>
+							</TabPanel>
+						</TabPanels>
+					</Tabs>
+				</div>
+			</div>
 		</div>
 	);
 }

@@ -1,6 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {Spinner} from "@chakra-ui/react"
+import {
+	Table,
+	Thead,
+	Tbody,
+	Tr,
+	Th,
+	Td,
+	TableCaption,
+	TableContainer,
+	Spinner,
+} from "@chakra-ui/react";
 
 function Tokens({ wallet, chain, tokens, setTokens }) {
 	const [isLoading, setIsLoading] = useState(false);
@@ -12,6 +22,7 @@ function Tokens({ wallet, chain, tokens, setTokens }) {
 	}, [wallet, chain]);
 
 	async function getTokenBalancesAndPrice() {
+		setIsLoading(true);
 		const response = await axios.get(
 			"http://localhost:8080/token-balances",
 			{
@@ -35,6 +46,7 @@ function Tokens({ wallet, chain, tokens, setTokens }) {
 			}
 			setTokens(t);
 		}
+		setIsLoading(false);
 	}
 
 	return (
@@ -48,20 +60,34 @@ function Tokens({ wallet, chain, tokens, setTokens }) {
 					size="xl"
 				/>
 			) : (
-				<div>
+				<div className="flex flex-col">
+					<div className="text-xl font-bold p-5 text-left">
+						ERC-20 Tokens
+					</div>
 					{/* <button onClick={getTokenBalancesAndPrice}> Get tokens</button> */}
-					<br />
-					{tokens.length > 0 &&
-						tokens.map((ele) => {
-							return (
-								<div key={ele.token_address}>
-									<span>
-										{ele.symbol} {ele.bal} (${ele.val})
-									</span>
-									<br />
-								</div>
-							);
-						})}
+					<TableContainer>
+						<Table variant="simple">
+							<Thead>
+								<Tr>
+									<Th>Token Symbol</Th>
+									<Th>Token Balance</Th>
+									<Th>Token Token Value </Th>
+								</Tr>
+							</Thead>
+							<Tbody>
+								{tokens.length > 0 &&
+									tokens.map((token) => {
+										return (
+											<Tr key={token.token_address}>
+												<Td>{token.symbol}</Td>
+												<Td>{token.bal}</Td>
+												<Td>${token.val}</Td>
+											</Tr>
+										);
+									})}
+							</Tbody>
+						</Table>
+					</TableContainer>
 				</div>
 			)}
 		</div>
