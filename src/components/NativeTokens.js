@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
+import { backendApi } from "../constants";
 
 function NativeTokens({
 	wallet,
@@ -20,15 +21,12 @@ function NativeTokens({
 
 	async function getNativeBalance() {
 		setIsLoading(true);
-		const response = await axios.get(
-			"http://localhost:8080/native-balance",
-			{
-				params: {
-					address: wallet,
-					chain: chain,
-				},
-			}
-		);
+		const response = await axios.get(`${backendApi}native-balance`, {
+			params: {
+				address: wallet,
+				chain: chain,
+			},
+		});
 
 		if (response.data.balance && response.data.usd) {
 			setNativeBalance((Number(response.data.balance) / 1e18).toFixed(3));

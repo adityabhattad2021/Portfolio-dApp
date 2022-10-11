@@ -13,6 +13,7 @@ import {
 	Tooltip,
 	Spinner,
 } from "@chakra-ui/react";
+import { backendApi } from "../constants";
 
 function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
 	const [isLoading, setIsLoading] = useState(false);
@@ -26,15 +27,12 @@ function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
 	async function getTokenTransferData() {
 		setIsLoading(true);
 
-		const response = await axios.get(
-			"http://localhost:8080/token-transfers",
-			{
-				params: {
-					address: wallet,
-					chain: chain,
-				},
-			}
-		);
+		const response = await axios.get(`${backendApi}token-transfers`, {
+			params: {
+				address: wallet,
+				chain: chain,
+			},
+		});
 
 		if (response.data) {
 			setTransfers(response.data);
@@ -44,7 +42,7 @@ function TokenTransferHistory({ chain, wallet, transfers, setTransfers }) {
 	}
 
 	return (
-		<div >
+		<div>
 			<div className="text-xl p-5 font-bold text-left">
 				Token Transfer History
 			</div>

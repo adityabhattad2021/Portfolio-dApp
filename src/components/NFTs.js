@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Box, Image, Spinner, Input } from "@chakra-ui/react";
+import { backendApi } from "../constants";
 
 function NFTs({ wallet, chain, nfts, setNfts }) {
 	const [nameFilter, setNameFilter] = useState("");
@@ -67,7 +68,7 @@ function NFTs({ wallet, chain, nfts, setNfts }) {
 	async function getUserNFTs() {
 		setIsFetching(true);
 		console.log("Fetch trigged");
-		const response = await axios.get("http://localhost:8080/nft-balance", {
+		const response = await axios.get(`${backendApi}nft-balance`, {
 			params: {
 				address: wallet,
 				chain: chain,
@@ -107,14 +108,14 @@ function NFTs({ wallet, chain, nfts, setNfts }) {
 			<div>
 				<div className="flex flex-row justify-between p-5">
 					<Input
-						style={{width:"32rem"}}
+						style={{ width: "32rem" }}
 						type="text"
 						placeholder="Filter by name"
 						onChange={(e) => setNameFilter(e.target.value)}
 						value={nameFilter}
 					/>
 					<Input
-						style={{width:"32rem"}}
+						style={{ width: "32rem" }}
 						type="text"
 						placeholder="Filter by ID"
 						onChange={(e) => setIdFilter(e.target.value)}

@@ -11,6 +11,7 @@ import {
 	TableContainer,
 	Spinner,
 } from "@chakra-ui/react";
+import { backendApi } from "../constants";
 
 function Tokens({ wallet, chain, tokens, setTokens }) {
 	const [isLoading, setIsLoading] = useState(false);
@@ -23,15 +24,12 @@ function Tokens({ wallet, chain, tokens, setTokens }) {
 
 	async function getTokenBalancesAndPrice() {
 		setIsLoading(true);
-		const response = await axios.get(
-			"http://localhost:8080/token-balances",
-			{
-				params: {
-					address: wallet,
-					chain: chain,
-				},
-			}
-		);
+		const response = await axios.get(`${backendApi}token-balances`, {
+			params: {
+				address: wallet,
+				chain: chain,
+			},
+		});
 		if (response.data) {
 			let t = response.data;
 			for (let i = 0; i < t.length; i++) {
