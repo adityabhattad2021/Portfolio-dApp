@@ -26,7 +26,6 @@ function WalletInputs({ chain, setChain, wallet, setWallet }) {
 						<option value="0x89">Polygon</option>
 						<option value="0x5">Goerli</option>
 						<option value="0x13881">Mumbai</option>
-						<option value="0x4">Rinkeby</option>
 					</Select>
 				</div>
 			</div>
